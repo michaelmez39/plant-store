@@ -1,0 +1,4 @@
+
+[workspace]
+members = ["htmx-frontend", "store-lib"]
+resolver = "2"
