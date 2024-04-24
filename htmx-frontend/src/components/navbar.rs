@@ -26,16 +26,14 @@ pub async fn navbar() -> Markup {
                 .navbar-end {
                     .navbar-item {
                         .buttons {
-                            a title="Shopping Cart" href="/shopping-cart" {
-                                span.icon-text {
-                                    span.icon.is-medium {
-                                        i { (SHOPPING_CART) }
-                                    }
-                                    span {
-                                        b {"My Cart"}
-                                        br;
-                                        "3 items"
-                                    }
+                            .shopping-cart {
+                                a title="Shopping Cart" href="/shopping-cart" {
+                                    span.pr-1 { (SHOPPING_CART) }
+                                }
+                                span {
+                                    b {"My Cart"}
+                                    br;
+                                    "3 items"
                                 }
                             }
                             a.button.is-primary { "Sign Up" }

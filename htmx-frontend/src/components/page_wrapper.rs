@@ -10,6 +10,14 @@ pub async fn page_wrapper(content: Markup, show_footer: bool) -> Markup {
                     .is-full-cell{
                         grid-column: 1/-1;
                     }
+                    .shrink {
+                        width: 2em;
+                    }
+                    .shopping-cart {
+                        display: inline-flex;
+                        align-items: center;
+                        line-height: 1rem;
+                    }
                 "#
             }
             (navbar().await)

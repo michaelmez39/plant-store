@@ -1,35 +1,85 @@
-use maud::{Markup, html};
+use maud::{html, Markup};
 
-use crate::components::page_wrapper;
+use crate::{components::page_wrapper, ItemListing};
 
 pub async fn shopping() -> Markup {
     page_wrapper(page().await, false).await
 }
 
 async fn page() -> Markup {
-    html!{
+    html! {
         .container {
-            .level.mb-1 {
-                .level-left {
-                    h2.title.is-size-4 { "Shopping Cart" }
-                }
-                .level-right {
-                    button.button.is-warning { "Remove All"}
-                }
-            }
             .columns {
                 .column.is-two-thirds {
-                    h3.is-size-5 { "Your Cart" }
-                    .box {
-                        "Item in your cart"
-                        .remove {}
+                    .level.mb-4 {
+                        .level-left {
+                            h2.title.is-size-4 { "Shopping Cart" }
+                        }
+                        .level-right {
+                            button.button.is-warning { "Remove All"}
+                        }
                     }
+                    (shopping_cart_item(ItemListing::random()).await)
+                    (shopping_cart_item(ItemListing::random()).await)
+                    (shopping_cart_item(ItemListing::random()).await)
+                    a.button.is-link href="/" { "Continue Shopping" }
                 }
                 .column {
-                    h3.is-size-5 { "Payment Info" }
+                    h2.is-size-4 { "Order Summary" }
                     .box {
-                        "Card Info"
-                        (payment_form().await)
+                        .level.is-mobile {
+                            .level-left {"Items: 3"}
+                            .level-right {"$67.39"}
+                        }
+                        (text_field("Shipping", None).await)
+                        (text_field("Promo Code", None).await)
+                        hr;
+                        .level.is-mobile {
+                            .level-left {"Total Cost:"}
+                            .level-right {"$77.39"}
+                        }
+                        button.button {"Checkout"}
+                    }
+                }
+            }
+        }
+    }
+}
+
+async fn shopping_cart_item(item: ItemListing) -> Markup {
+    html! {
+        .box {
+            .media {
+                .media-left {
+                    .image.is-96x96.is-flex.is-align-items-center {
+                        img src=(format!("http://localhost:3000/assets/{}", item.image));
+                    }
+                }
+                .media-content.columns {
+                    .column.is-third{
+                        b { (item.name) }
+                        br;
+                        "From the mountains. Very healthy."
+                    }
+                    .column {
+                        b { "Quantity" }
+                        br;
+                        .field.is-grouped {
+                            button.button {"-"}
+                            input.is-rounded.shrink type="text";
+                            button.button {"+"}
+                        }
+                    }
+                    .column {
+                        b { "Price" }
+                        br;
+                        (item.price)
+                    }
+                }
+                .media-right {
+                    a {
+                        span.mr-2 {"Remove"}
+                        .delete {}
                     }
                 }
             }
@@ -58,7 +108,7 @@ async fn payment_form() -> Markup {
             (text_field("Billing Address", None).await)
             .field {
                 .control {
-                    button.button.is-link { "Review Order" }
+                    button.button.is-link { "Place Order" }
                 }
             }
         }
