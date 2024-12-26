@@ -1,9 +1,12 @@
+use crate::{
+    components::{notification, page_wrapper, Color},
+    utils::display_decimal,
+};
 use axum::extract::Path;
-use maud::{Markup, html};
+use maud::{html, Markup};
+use store_lib::ItemListing;
 use tracing::info;
 use uuid::Uuid;
-
-use crate::{ItemListing, components::{page_wrapper, notification, Color}};
 
 pub async fn store() -> Markup {
     html!((page_wrapper(page_body().await, true).await))
@@ -11,15 +14,16 @@ pub async fn store() -> Markup {
 
 async fn page_body() -> Markup {
     html! {
-        .container {
-            #notifications;
-            section.block{
-                h2.title.is-2 { "Plants and Gems" }
-                h4.subtitle.is-4 { "The best of both in one place" }
-            }
-            section.block {
-                h3.title.is-3 { "Available Rocks" }
-                (rock_scroller().await)
+        .section {
+            .container {
+                section.block {
+                    h2.title.is-4 { "Plants and Gems" }
+                    h4.subtitle.is-6 { "The best of both in one place" }
+                }
+                section.block {
+                    h3.is-6 { "Available Rocks" }
+                    (rock_scroller().await)
+                }
             }
         }
     }
@@ -30,7 +34,7 @@ async fn rock_listing(rock: &ItemListing) -> Markup {
         .card {
             .card-image {
                 .figure {
-                    img.img src=(format!("http://localhost:3000/assets/{}", rock.image));
+                    img.img src=(format!("/assets/images/{}", rock.image));
                 }
             }
             .card-content {
@@ -38,7 +42,7 @@ async fn rock_listing(rock: &ItemListing) -> Markup {
                     .media-content {
                         h4.title.is-5 { (rock.name) }
                         h6.subtitle.is-6.has-text-gray-light {
-                            (format!("${}.{}{}", rock.price / 100, (rock.price / 10) % 10, rock.price % 10))
+                            (display_decimal(rock.price))
                         }
                     }
                     .media-right {
@@ -67,7 +71,7 @@ pub async fn rock_list(Path(page): Path<usize>) -> Markup {
         @for rock in &rocks {
             .cell { (rock_listing(rock).await) }
         }
-        #replaceMe.level.cell.is-full-cell.mx-auto {            
+        #replaceMe.level.cell.is-full-cell.mx-auto {
             button.button.mb-2
                 hx-target="#replaceMe"
                 hx-swap="outerHTML"
@@ -85,4 +89,3 @@ async fn rock_scroller() -> Markup {
         }
     }
 }
-

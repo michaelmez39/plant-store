@@ -6,6 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+uuid = { version = "1.8.0", features = ["v4", "serde"] }
+rand = "0.8.5"
+rust_decimal = "1.35.0"
+
 [dependencies.sqlx]
 version = "0.7.2"
 features = ["runtime-tokio-native-tls", "postgres", "chrono", "uuid"]

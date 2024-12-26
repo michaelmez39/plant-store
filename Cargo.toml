@@ -1,4 +1,6 @@
-
 [workspace]
 members = ["htmx-frontend", "store-lib"]
 resolver = "2"
+
+[workspace.dependencies]
+axum-login = "0.16.0"

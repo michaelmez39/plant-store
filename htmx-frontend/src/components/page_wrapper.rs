@@ -4,31 +4,16 @@ use maud::{html, Markup, DOCTYPE};
 pub async fn page_wrapper(content: Markup, show_footer: bool) -> Markup {
     html!(
         (header("Rocks and Plants!").await)
-        body {
-            style {
-                r#"
-                    .is-full-cell{
-                        grid-column: 1/-1;
-                    }
-                    .shrink {
-                        width: 2em;
-                    }
-                    .shopping-cart {
-                        display: inline-flex;
-                        align-items: center;
-                        line-height: 1rem;
-                    }
-                "#
+        html data-theme="light" {
+            body {
+                (navbar().await)
+                div id="notifications" {}
+                (content)
+                @if show_footer {
+                    (footer().await)
+                }
+                (htmx_script().await)
             }
-            (navbar().await)
-            .container {
-                #notifications {}
-            }
-            (content)
-            @if show_footer {
-                (footer().await)
-            }
-            (htmx_script().await)
         }
     )
 }
@@ -39,6 +24,8 @@ async fn header(page_title: &str) -> Markup {
         meta charset="utf-8";
         title { (page_title) }
         link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css";
+        link rel="stylesheet" href="/assets/stylesheets/global.css";
+        link rel="stylesheet" href="/assets/stylesheets/switch.css";
     }
 }
 

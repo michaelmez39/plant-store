@@ -1,0 +1,37 @@
+:root {
+  --bulma-navbar-item-img-max-height: 2rem;
+}
+
+.is-full-cell {
+  grid-column: 1/-1;
+}
+
+.shrink {
+  width: 2em;
+}
+
+.shopping-cart {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1rem;
+}
+
+#notifications {
+  position: absolute;
+  right: 0;
+  width: 25em;
+  z-index: 9999;
+}
+
+.counter {
+  border-radius: 6px;
+}
+
+.radio-button>input[type="radio"] {
+  opacity: 0;
+  z-index: 100;
+}
+
+.radio-button>input[type="radio"]:checked+label {
+  background-color: var(--bulma-primary-soft);
+}

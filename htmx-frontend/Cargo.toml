@@ -6,9 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+store-lib = { path="../store-lib" }
 axum = "0.7.5"
 maud = { version = "0.26.0", features = ["axum"] }
-rand = "0.8.5"
+rust_decimal = "1.35.0"
 tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
 tower-http = { version = "0.5.2", features = ["fs", "trace"] }
 tracing = "0.1.40"

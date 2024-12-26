@@ -1,15 +1,14 @@
-use maud::{Markup, html};
 use crate::components::icons::SHOPPING_CART;
+use maud::{html, Markup};
 
 pub async fn navbar() -> Markup {
     html! {
         nav.navbar {
             .navbar-brand {
                 .navbar-item {
-                    figure.image.mr-1 {
-                        img src="/assets/golden-pothos.png" alt="Logo, agolden pothos icon";
+                    figure.image {
+                        img src="/assets/images/plantomics.webp" alt="Logo, agolden pothos icon";
                     }
-                    "Rocks and Plants"
                 }
                 a.navbar-burger {
                     span aria-hidden="true" {}
@@ -21,28 +20,41 @@ pub async fn navbar() -> Markup {
             .navbar-menu {
                 .navbar-start {
                     a.navbar-item href="/" { "Store" }
-                    a.navbar-item href="/rocks" { "Your Rocks" }
                 }
+
                 .navbar-end {
-                    .navbar-item {
-                        .buttons {
-                            .shopping-cart {
-                                a title="Shopping Cart" href="/shopping-cart" {
-                                    span.pr-1 { (SHOPPING_CART) }
-                                }
-                                span {
-                                    b {"My Cart"}
-                                    br;
-                                    "3 items"
-                                }
-                            }
-                            a.button.is-primary { "Sign Up" }
-                            a.button.is-secondary { "Login" }
-                        }
-                    }
+                    (navbar_end().await)
                 }
             }
         }
     }
 }
 
+async fn navbar_end() -> Markup {
+    let toggle_light = "document.querySelector('html').setAttribute('data-theme', this.checked ? 'dark' : 'light')";
+
+    html! {
+        .navbar-item {
+            div {
+                input.switch.is-rounded id="lightModeToggle" "type"="checkbox" onchange=(toggle_light) checked="checked" { }
+                label "for"="lightModeToggle" {}
+            }
+        }
+        .navbar-item {
+            a.shopping-cart.has-text-dark-light.has-text-light-dark title="Shopping Cart" href="/shopping-cart" {
+                span.pr-1 { (SHOPPING_CART) }
+                span {
+                    b {"Cart"}
+                    br;
+                    "3 items"
+                }
+            }
+        }
+        .navbar-item {
+            .buttons {
+                a.button.is-primary { "Sign Up" }
+                a.button.is-secondary { "Login" }
+            }
+        }
+    }
+}

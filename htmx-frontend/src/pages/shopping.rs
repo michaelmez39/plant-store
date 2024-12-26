@@ -1,6 +1,7 @@
-use maud::{html, Markup};
+use crate::{components::page_wrapper, utils::display_decimal};
 
-use crate::{components::page_wrapper, ItemListing};
+use maud::{html, Markup};
+use store_lib::{Cart, CartItem, ItemListing};
 
 pub async fn shopping() -> Markup {
     page_wrapper(page().await, false).await
@@ -8,40 +9,77 @@ pub async fn shopping() -> Markup {
 
 async fn page() -> Markup {
     html! {
-        .container {
-            .columns {
-                .column.is-two-thirds {
-                    .level.mb-4 {
-                        .level-left {
-                            h2.title.is-size-4 { "Shopping Cart" }
-                        }
-                        .level-right {
-                            button.button.is-warning { "Remove All"}
-                        }
+        .section {
+            .container {
+                .columns {
+                    .column.is-two-thirds {
+                        (cart().await)
                     }
-                    (shopping_cart_item(ItemListing::random()).await)
-                    (shopping_cart_item(ItemListing::random()).await)
-                    (shopping_cart_item(ItemListing::random()).await)
-                    a.button.is-link href="/" { "Continue Shopping" }
-                }
-                .column {
-                    h2.is-size-4 { "Order Summary" }
-                    .box {
-                        .level.is-mobile {
-                            .level-left {"Items: 3"}
-                            .level-right {"$67.39"}
-                        }
-                        (text_field("Shipping", None).await)
-                        (text_field("Promo Code", None).await)
-                        hr;
-                        .level.is-mobile {
-                            .level-left {"Total Cost:"}
-                            .level-right {"$77.39"}
-                        }
-                        button.button {"Checkout"}
+                    .column {
+                        (order_summary().await)
                     }
                 }
             }
+        }
+    }
+}
+
+async fn cart() -> Markup {
+    html! {
+        .level.mb-5 {
+            .level-left {
+                h2.title.is-size-4 { "Shopping Cart" }
+            }
+            .level-right {
+                button.button.is-warning.is-outlined { "Remove All"}
+            }
+        }
+        (shopping_cart_item(ItemListing::random()).await)
+        (shopping_cart_item(ItemListing::random()).await)
+        (shopping_cart_item(ItemListing::random()).await)
+        a.is-link.is-outlined href="/" { "Continue Shopping" }
+    }
+}
+
+pub async fn order_summary() -> Markup {
+    let cart = Cart {
+        items: vec![
+            CartItem {
+                listing: ItemListing::random(),
+                number: 3,
+            },
+            CartItem {
+                listing: ItemListing::random(),
+                number: 2,
+            },
+            CartItem {
+                listing: ItemListing::random(),
+                number: 1,
+            },
+        ],
+    };
+
+    html! {
+        h2.is-size-4 { "Order Summary" }
+            .box {
+                .field.has-addons {
+                    .control {
+                        input.input "type"="text" placeholder="Promo Code" {}
+                    }
+                    .control {
+                        button.button { "Apply Promo" }
+                    }
+                }
+                hr;
+                .level.is-mobile.is-size-5 {
+                    .level-left {
+                        (format!("Subtotal ( {} items)", cart.items.len()))
+                    }
+                    .level-right {
+                        (display_decimal(cart.subtotal()))
+                    }
+                }
+                a.button.is-fullwidth href="/checkout" {"Checkout"}
         }
     }
 }
@@ -52,28 +90,28 @@ async fn shopping_cart_item(item: ItemListing) -> Markup {
             .media {
                 .media-left {
                     .image.is-96x96.is-flex.is-align-items-center {
-                        img src=(format!("http://localhost:3000/assets/{}", item.image));
+                        img src=(format!("/assets/images/{}", item.image));
                     }
                 }
                 .media-content.columns {
-                    .column.is-third{
+                    .column.is-third {
                         b { (item.name) }
                         br;
-                        "From the mountains. Very healthy."
+                        (item.description)
                     }
                     .column {
                         b { "Quantity" }
                         br;
                         .field.is-grouped {
                             button.button {"-"}
-                            input.is-rounded.shrink type="text";
+                            input.counter.input.shrink.has-text-centered value="1" type="text";
                             button.button {"+"}
                         }
                     }
                     .column {
                         b { "Price" }
                         br;
-                        (item.price)
+                        "$"(item.price)
                     }
                 }
                 .media-right {
@@ -81,34 +119,6 @@ async fn shopping_cart_item(item: ItemListing) -> Markup {
                         span.mr-2 {"Remove"}
                         .delete {}
                     }
-                }
-            }
-        }
-    }
-}
-
-async fn text_field(label: &'static str, help: Option<&'static str>) -> Markup {
-    html! {
-        .field {
-            label.label { (label) }
-            .control {
-                input.input type="text";
-            }
-            @if let Some(help) = help {
-                p.help { (help) }
-            }
-        }
-    }
-}
-
-async fn payment_form() -> Markup {
-    html! {
-        form {
-            (text_field("Name", None).await)
-            (text_field("Billing Address", None).await)
-            .field {
-                .control {
-                    button.button.is-link { "Place Order" }
                 }
             }
         }
