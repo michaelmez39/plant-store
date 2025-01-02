@@ -1,29 +1,29 @@
 use crate::{
-    components::{notification, page_wrapper, Color},
+    components::{notification, Color, PageWrapper},
     utils::display_decimal,
 };
 use axum::extract::Path;
 use maud::{html, Markup};
-use store_lib::ItemListing;
+use store_lib::store::ItemListing;
 use tracing::info;
 use uuid::Uuid;
 
-pub async fn store() -> Markup {
-    html!((page_wrapper(page_body().await, true).await))
+pub async fn store(page: PageWrapper) -> Markup {
+    page.render(page_body().await)
 }
 
 async fn page_body() -> Markup {
     html! {
-        .section {
-            .container {
-                section.block {
-                    h2.title.is-4 { "Plants and Gems" }
-                    h4.subtitle.is-6 { "The best of both in one place" }
-                }
-                section.block {
-                    h3.is-6 { "Available Rocks" }
-                    (rock_scroller().await)
-                }
+        section.hero {
+            .hero-body {
+                h2.title { "Plantomics" }
+                h4.subtitle { "The best house plants you can find" }
+            }
+        }
+        .container {
+            section.block {
+                h3.is-6 { "Available Rocks" }
+                (rock_scroller().await)
             }
         }
     }

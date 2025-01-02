@@ -1,13 +1,17 @@
-use crate::components::icons::SHOPPING_CART;
+use crate::{
+    components::icons::{MOON, SHOPPING_CART},
+    Auth,
+};
 use maud::{html, Markup};
+use store_lib::account::User;
 
-pub async fn navbar() -> Markup {
+pub fn navbar(auth: &Auth) -> Markup {
     html! {
         nav.navbar {
             .navbar-brand {
                 .navbar-item {
                     figure.image {
-                        img src="/assets/images/plantomics.webp" alt="Logo, agolden pothos icon";
+                        img.nav-logo src="/assets/images/plantomics.webp" alt="Logo, agolden pothos icon";
                     }
                 }
                 a.navbar-burger {
@@ -23,23 +27,41 @@ pub async fn navbar() -> Markup {
                 }
 
                 .navbar-end {
-                    (navbar_end().await)
+                    (account_buttons(&auth.user))
                 }
             }
         }
     }
 }
 
-async fn navbar_end() -> Markup {
-    let toggle_light = "document.querySelector('html').setAttribute('data-theme', this.checked ? 'dark' : 'light')";
-
-    html! {
+fn account_buttons(maybe_user: &Option<User>) -> Markup {
+    html!(
         .navbar-item {
-            div {
-                input.switch.is-rounded id="lightModeToggle" "type"="checkbox" onchange=(toggle_light) checked="checked" { }
-                label "for"="lightModeToggle" {}
+            @if let Some(ref user) = maybe_user {
+                span { "Welcome, " (user.username)}
             }
         }
+        .navbar-item.buttons {
+            @if maybe_user.is_some() {
+                form action="/logout" method="post" {
+                    button.button.logout.is-warning type="submit"  { "Logout" }
+                }
+            } @else {
+                a.button.is-link href="/signup" { "Sign Up" }
+                a.button.is-secondary href="/login" { "Login" }
+            }
+
+            button.button.shopping-cart id="lightModeToggle" onclick=(TOGGLE_LIGHT) {
+                span.icon { (MOON) }
+            }
+
+            (shopping_cart())
+        }
+    )
+}
+
+fn shopping_cart() -> Markup {
+    html! (
         .navbar-item {
             a.shopping-cart.has-text-dark-light.has-text-light-dark title="Shopping Cart" href="/shopping-cart" {
                 span.pr-1 { (SHOPPING_CART) }
@@ -50,11 +72,12 @@ async fn navbar_end() -> Markup {
                 }
             }
         }
-        .navbar-item {
-            .buttons {
-                a.button.is-primary { "Sign Up" }
-                a.button.is-secondary { "Login" }
-            }
-        }
-    }
+    )
 }
+
+const TOGGLE_LIGHT: &'static str = r#"
+    const htmlNode = document.querySelector('html')
+    const flipped = htmlNode.getAttribute('data-theme') === 'light' ? 'dark' : 'light'
+    htmlNode.setAttribute('data-theme', flipped)
+    document.cookie = `theme=${flipped};`
+"#;

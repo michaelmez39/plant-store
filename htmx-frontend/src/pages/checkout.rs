@@ -6,12 +6,12 @@ use store_lib::{
 };
 
 use crate::{
-    components::{page_wrapper, text_field},
+    components::{text_field, PageWrapper},
     utils::display_decimal,
 };
 
-pub async fn checkout() -> Markup {
-    page_wrapper(page_body().await, false).await
+pub async fn checkout(page: PageWrapper) -> Markup {
+    page.render(page_body().await)
 }
 
 async fn page_body() -> Markup {
@@ -20,8 +20,8 @@ async fn page_body() -> Markup {
             .container {
                 .columns {
                     .column.is-two-thirds {
-                        a href="/shopping-cart" { "← Review Your Order" }
                         h2.title.is-3 { "Shipping" }
+                        a href="/shopping-cart" { "← Review Your Order" }
                         .box {
                             (shipping_form().await)
                         }

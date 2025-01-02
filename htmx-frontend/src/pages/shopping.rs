@@ -1,13 +1,16 @@
-use crate::{components::page_wrapper, utils::display_decimal};
+use crate::{components::PageWrapper, utils::display_decimal};
 
 use maud::{html, Markup};
-use store_lib::{Cart, CartItem, ItemListing};
+use store_lib::{
+    cart::{Cart, CartItem},
+    store::ItemListing,
+};
 
-pub async fn shopping() -> Markup {
-    page_wrapper(page().await, false).await
+pub async fn shopping(page: PageWrapper) -> Markup {
+    page.render(order_page().await)
 }
 
-async fn page() -> Markup {
+async fn order_page() -> Markup {
     html! {
         .section {
             .container {
@@ -26,18 +29,18 @@ async fn page() -> Markup {
 
 async fn cart() -> Markup {
     html! {
-        .level.mb-5 {
+        .level {
             .level-left {
-                h2.title.is-size-4 { "Shopping Cart" }
+                h2.title.is-3 { "Shopping Cart" }
             }
             .level-right {
                 button.button.is-warning.is-outlined { "Remove All"}
             }
         }
-        (shopping_cart_item(ItemListing::random()).await)
-        (shopping_cart_item(ItemListing::random()).await)
-        (shopping_cart_item(ItemListing::random()).await)
         a.is-link.is-outlined href="/" { "Continue Shopping" }
+        (shopping_cart_item(ItemListing::random()).await)
+        (shopping_cart_item(ItemListing::random()).await)
+        (shopping_cart_item(ItemListing::random()).await)
     }
 }
 
@@ -79,7 +82,7 @@ pub async fn order_summary() -> Markup {
                         (display_decimal(cart.subtotal()))
                     }
                 }
-                a.button.is-fullwidth href="/checkout" {"Checkout"}
+                a.button.is-fullwidth href="/checkout" {"Proceed to Checkout"}
         }
     }
 }
