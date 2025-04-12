@@ -9,11 +9,7 @@ pub fn navbar(auth: &Auth) -> Markup {
     html! {
         nav.navbar {
             .navbar-brand {
-                .navbar-item {
-                    figure.image {
-                        img.nav-logo src="/assets/images/plantomics.webp" alt="Logo, agolden pothos icon";
-                    }
-                }
+                h2.is-secondary-font.navbar-item { "Plantomics" }
                 a.navbar-burger {
                     span aria-hidden="true" {}
                     span aria-hidden="true" {}

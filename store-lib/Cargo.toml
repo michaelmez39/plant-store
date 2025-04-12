@@ -8,10 +8,11 @@ edition = "2021"
 [dependencies]
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
 rand = "0.8.5"
-rust_decimal = "1.35.0"
+bigdecimal.workspace = true
 axum-login.workspace = true
 argon2 = "0.5.3"
 serde = { version = "1.0.217", features = ["derive"] }
+ts-rs.workspace = true
 
 [dependencies.sqlx]
 version = "0.7.2"

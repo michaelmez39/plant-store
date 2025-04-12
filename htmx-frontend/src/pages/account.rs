@@ -70,7 +70,7 @@ pub async fn create_account(page: PageWrapper) -> Markup {
 }
 
 pub fn add_user(store: UserBackend, signup: Signup) -> Result<(), store_lib::account::UserError> {
-    let mut user_store = store.0.lock().expect("user store threading issue");
+    let mut user_store = store.lock().expect("user store threading issue");
     user_store.add(signup.clone())
 }
 
@@ -81,7 +81,7 @@ pub async fn create_account_post(
     Form(signup): Form<Signup>,
 ) -> impl IntoResponse {
     info!("Creating account for: {}", signup.email);
-    let Ok(_) = add_user(s.user_store, signup.clone()) else {
+    let Ok(_) = add_user(s.user_backend, signup.clone()) else {
         warn!("failed to store new user");
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     };

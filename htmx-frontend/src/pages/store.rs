@@ -4,7 +4,7 @@ use crate::{
 };
 use axum::extract::Path;
 use maud::{html, Markup};
-use store_lib::store::ItemListing;
+use store_lib::store::Product;
 use tracing::info;
 use uuid::Uuid;
 
@@ -29,7 +29,7 @@ async fn page_body() -> Markup {
     }
 }
 
-async fn rock_listing(rock: &ItemListing) -> Markup {
+async fn rock_listing(rock: &Product) -> Markup {
     html! {
         .card {
             .card-image {
@@ -42,7 +42,7 @@ async fn rock_listing(rock: &ItemListing) -> Markup {
                     .media-content {
                         h4.title.is-5 { (rock.name) }
                         h6.subtitle.is-6.has-text-gray-light {
-                            (display_decimal(rock.price))
+                            (display_decimal(&rock.price))
                         }
                     }
                     .media-right {
@@ -66,7 +66,7 @@ pub async fn add_to_cart(Path(id): Path<Uuid>) -> Markup {
 }
 
 pub async fn rock_list(Path(page): Path<usize>) -> Markup {
-    let rocks: Vec<ItemListing> = (0..12).map(|_| ItemListing::random()).collect();
+    let rocks: Vec<Product> = (0..12).map(|_| Product::random()).collect();
     html! {
         @for rock in &rocks {
             .cell { (rock_listing(rock).await) }

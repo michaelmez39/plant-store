@@ -4,3 +4,5 @@ resolver = "2"
 
 [workspace.dependencies]
 axum-login = "0.16.0"
+ts-rs = { version = "10.1", features = ["uuid-impl", "bigdecimal-impl"] }
+bigdecimal = "0.4.8"

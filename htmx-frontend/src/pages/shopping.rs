@@ -3,7 +3,7 @@ use crate::{components::PageWrapper, utils::display_decimal};
 use maud::{html, Markup};
 use store_lib::{
     cart::{Cart, CartItem},
-    store::ItemListing,
+    store::Product,
 };
 
 pub async fn shopping(page: PageWrapper) -> Markup {
@@ -38,9 +38,9 @@ async fn cart() -> Markup {
             }
         }
         a.is-link.is-outlined href="/" { "Continue Shopping" }
-        (shopping_cart_item(ItemListing::random()).await)
-        (shopping_cart_item(ItemListing::random()).await)
-        (shopping_cart_item(ItemListing::random()).await)
+        (shopping_cart_item(Product::random()).await)
+        (shopping_cart_item(Product::random()).await)
+        (shopping_cart_item(Product::random()).await)
     }
 }
 
@@ -48,15 +48,15 @@ pub async fn order_summary() -> Markup {
     let cart = Cart {
         items: vec![
             CartItem {
-                listing: ItemListing::random(),
+                listing: Product::random(),
                 number: 3,
             },
             CartItem {
-                listing: ItemListing::random(),
+                listing: Product::random(),
                 number: 2,
             },
             CartItem {
-                listing: ItemListing::random(),
+                listing: Product::random(),
                 number: 1,
             },
         ],
@@ -79,7 +79,7 @@ pub async fn order_summary() -> Markup {
                         (format!("Subtotal ( {} items)", cart.items.len()))
                     }
                     .level-right {
-                        (display_decimal(cart.subtotal()))
+                        (display_decimal(&cart.subtotal()))
                     }
                 }
                 a.button.is-fullwidth href="/checkout" {"Proceed to Checkout"}
@@ -87,7 +87,7 @@ pub async fn order_summary() -> Markup {
     }
 }
 
-async fn shopping_cart_item(item: ItemListing) -> Markup {
+async fn shopping_cart_item(item: Product) -> Markup {
     html! {
         .box {
             .media {

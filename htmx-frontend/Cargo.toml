@@ -6,15 +6,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-store-lib = { path="../store-lib" }
-axum = "0.7.5"
+axum-extra = { version = "0.9.6", features = ["cookie"] }
+axum-login.workspace = true
+axum-macros = "0.4.2"
+axum = { version = "0.7.5", features=["macros"] }
+bigdecimal.workspace = true
 maud = { version = "0.26.0", features = ["axum"] }
-rust_decimal = "1.35.0"
+serde = { version = "1.0.217", features = ["derive"] }
+store-lib = { path="../store-lib" }
 tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
 tower-http = { version = "0.5.2", features = ["fs", "trace"] }
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
+ts-rs.workspace = true
 uuid = { version = "1.8.0", features = ["v4", "serde"] }
-axum-login.workspace = true
-serde = { version = "1.0.217", features = ["derive"] }
-axum-macros = "0.4.2"

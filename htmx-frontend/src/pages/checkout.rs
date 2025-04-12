@@ -1,8 +1,8 @@
 use maud::{html, Markup};
-use rust_decimal::Decimal;
+use bigdecimal::BigDecimal;
 use store_lib::{
     cart::{Cart, CartItem},
-    store::ItemListing,
+    store::Product,
 };
 
 use crate::{
@@ -16,19 +16,15 @@ pub async fn checkout(page: PageWrapper) -> Markup {
 
 async fn page_body() -> Markup {
     html! {
-        .section{
+        .section {
             .container {
                 .columns {
                     .column.is-two-thirds {
                         h2.title.is-3 { "Shipping" }
                         a href="/shopping-cart" { "← Review Your Order" }
-                        .box {
-                            (shipping_form().await)
-                        }
+                        .box { (shipping_form().await) }
                         h2.title.is-3 { "Payment" }
-                        .box {
-                            (payment_form().await)
-                        }
+                        .box { (payment_form().await) }
                     }
                     .column {
                         (order_summary().await)
@@ -39,7 +35,7 @@ async fn page_body() -> Markup {
     }
 }
 
-async fn review_item(item: &ItemListing) -> Markup {
+async fn review_item(item: &Product) -> Markup {
     html! {
         .columns.is-mobile {
             .column {
@@ -51,7 +47,7 @@ async fn review_item(item: &ItemListing) -> Markup {
                 (item.name)
             }
             .column.has-text-right{
-                (display_decimal(item.price))
+                (display_decimal(&item.price))
             }
         }
     }
@@ -61,15 +57,15 @@ pub async fn order_summary() -> Markup {
     let cart = Cart {
         items: vec![
             CartItem {
-                listing: ItemListing::random(),
+                listing: Product::random(),
                 number: 3,
             },
             CartItem {
-                listing: ItemListing::random(),
+                listing: Product::random(),
                 number: 2,
             },
             CartItem {
-                listing: ItemListing::random(),
+                listing: Product::random(),
                 number: 1,
             },
         ],
@@ -86,7 +82,7 @@ pub async fn order_summary() -> Markup {
                     .level-left {
                         (format!("Subtotal ({} Items)", cart.items.len()))
                     }
-                    .level-right {(display_decimal(cart.subtotal()))}
+                    .level-right {(display_decimal(&cart.subtotal()))}
                 }
                 .level.is-mobile {
                     .level-left {"Fedex Standard Shipping"}
@@ -96,7 +92,7 @@ pub async fn order_summary() -> Markup {
                 .level.is-mobile {
                     .level-left {"Total Cost:"}
                     .level-right {
-                        (display_decimal(cart.subtotal() + Decimal::new(799, 2)))
+                        (display_decimal(&(cart.subtotal() + BigDecimal::new(799.into(), 2))))
                     }
                 }
                 button.button.is-link.is-fullwidth { "Place Order" }

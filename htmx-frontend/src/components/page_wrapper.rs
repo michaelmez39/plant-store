@@ -2,10 +2,11 @@ use crate::{components::navbar, Auth};
 use axum::{
     async_trait,
     extract::FromRequestParts,
-    http::{header::COOKIE, request::Parts, HeaderMap, StatusCode},
+    http::{request::Parts, StatusCode},
 };
+
+use axum_extra::extract::cookie::CookieJar;
 use maud::{html, Markup, DOCTYPE};
-use tracing::info;
 
 const DEFAULT_THEME: &'static str = "dark";
 
@@ -23,35 +24,23 @@ where
 
     async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let auth = Auth::from_request_parts(parts, state).await?;
-        let theme: String = HeaderMap::from_request_parts(parts, state)
-            .await
-            .as_ref()
-            .map(get_theme)
-            .map(|t| t.unwrap_or(DEFAULT_THEME))
+        let cookies = CookieJar::from_request_parts(parts, state).await.unwrap(); // SAFETY: infallible
+
+        let theme: String = cookies
+            .get("theme")
+            .map(|t| t.value())
             .unwrap_or(DEFAULT_THEME)
             .to_owned();
-        info!("{theme}");
+
         Ok(Self { auth, theme })
     }
-}
-
-fn get_theme(headers: &HeaderMap) -> Option<&str> {
-    Some(
-        headers
-            .get(COOKIE)?
-            .to_str()
-            .ok()?
-            .split_once("=")?
-            .1
-            .trim(),
-    )
 }
 
 impl PageWrapper {
     pub fn render(self, template: Markup) -> Markup {
         html!(
-            (header("Rocks and Plants!"))
             html data-theme=(&self.theme) {
+                (header("Rocks and Plants!"))
                 body {
                     (navbar(&self.auth))
                     div id="notifications" {}
@@ -69,7 +58,10 @@ fn header(page_title: &str) -> Markup {
         (DOCTYPE)
         meta charset="utf-8";
         title { (page_title) }
-        link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css";
+        link rel="preconnect" href="https://fonts.googleapis.com";
+        link rel="preconnect" href="https://fonts.gstatic.com" crossorigin;
+        link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet";
+
         link rel="stylesheet" href="/assets/stylesheets/global.css";
         link rel="stylesheet" href="/assets/stylesheets/switch.css";
     }
@@ -78,11 +70,7 @@ fn header(page_title: &str) -> Markup {
 fn footer() -> Markup {
     html! {
         footer.footer {
-            "You've reached " b { "the bottom" }
-            br;
-            a href="https://www.flaticon.com/free-icons/indoor-plants" title="indoor plants icons" {
-                "Indoor plants icons created by Freepik - Flaticon"
-            }
+            "Plantomics 2025 &copy;"
             br;
             "Font Awesome by Dave Gandy - https://fortawesome.github.com/Font-Awesome, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0>, via Wikimedia Commons"
         }

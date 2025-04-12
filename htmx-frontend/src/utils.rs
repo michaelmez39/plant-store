@@ -1,5 +1,5 @@
-use rust_decimal::Decimal;
+use bigdecimal::BigDecimal;
 
-pub fn display_decimal(money: Decimal) -> String {
+pub fn display_decimal(money: &BigDecimal) -> String {
     format!("${}", money)
 }
