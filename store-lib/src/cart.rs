@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::store::Product;
-use bigdecimal::{BigDecimal, num_bigint::BigInt};
+use bigdecimal::{num_bigint::BigInt, BigDecimal};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use uuid::Uuid;
@@ -38,32 +38,30 @@ pub struct CartItem {
     pub number: usize,
 }
 
-#[derive(Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase")]
-pub struct AddToCart {
-    pub listing_id: Uuid,
-    pub number: usize,
-}
-
 #[derive(Serialize, Clone, TS)]
+#[ts(export)]
 pub struct Cart {
-    pub items: Vec<CartItem>,
+    pub items: HashMap<Uuid, CartItem>,
 }
 
 impl Default for Cart {
     fn default() -> Self {
-        Self { items: Vec::new() }
+        Self {
+            items: HashMap::new(),
+        }
     }
 }
 
 impl Cart {
-    pub fn new(items: Vec<CartItem>) -> Self {
+    pub fn new(items: HashMap<Uuid, CartItem>) -> Self {
         Self { items }
     }
 
     pub fn subtotal(&self) -> BigDecimal {
         self.items
-            .iter()
-            .fold(BigDecimal::new(BigInt::ZERO, 2), |acc, item| acc + item.listing.price.clone())
+            .values()
+            .fold(BigDecimal::new(BigInt::ZERO, 2), |acc, item| {
+                acc + item.listing.price.clone()
+            })
     }
 }

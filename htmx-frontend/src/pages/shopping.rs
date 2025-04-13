@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{components::PageWrapper, utils::display_decimal};
 
 use maud::{html, Markup};
@@ -5,6 +7,7 @@ use store_lib::{
     cart::{Cart, CartItem},
     store::Product,
 };
+use uuid::Uuid;
 
 pub async fn shopping(page: PageWrapper) -> Markup {
     page.render(order_page().await)
@@ -46,20 +49,29 @@ async fn cart() -> Markup {
 
 pub async fn order_summary() -> Markup {
     let cart = Cart {
-        items: vec![
-            CartItem {
-                listing: Product::random(),
-                number: 3,
-            },
-            CartItem {
-                listing: Product::random(),
-                number: 2,
-            },
-            CartItem {
-                listing: Product::random(),
-                number: 1,
-            },
-        ],
+        items: HashMap::from([
+            (
+                Uuid::new_v4(),
+                CartItem {
+                    listing: Product::random(),
+                    number: 3,
+                },
+            ),
+            (
+                Uuid::new_v4(),
+                CartItem {
+                    listing: Product::random(),
+                    number: 2,
+                },
+            ),
+            (
+                Uuid::new_v4(),
+                CartItem {
+                    listing: Product::random(),
+                    number: 1,
+                },
+            ),
+        ]),
     };
 
     html! {

@@ -4,8 +4,10 @@ use axum::Json;
 use serde::Serialize;
 use store_lib::account::{Credentials, User};
 use tracing::warn;
+use ts_rs::TS;
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 enum LoginStatus {
     LoggedIn,
     NotLoggedIn,
@@ -13,7 +15,8 @@ enum LoginStatus {
     Failed,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
+#[ts(export)]
 pub(crate) struct LoginResponse {
     status: LoginStatus,
     user: Option<User>,

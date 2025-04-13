@@ -1,9 +1,12 @@
-use maud::{html, Markup};
+use std::collections::HashMap;
+
 use bigdecimal::BigDecimal;
+use maud::{html, Markup};
 use store_lib::{
     cart::{Cart, CartItem},
     store::Product,
 };
+use uuid::Uuid;
 
 use crate::{
     components::{text_field, PageWrapper},
@@ -55,26 +58,35 @@ async fn review_item(item: &Product) -> Markup {
 
 pub async fn order_summary() -> Markup {
     let cart = Cart {
-        items: vec![
-            CartItem {
-                listing: Product::random(),
-                number: 3,
-            },
-            CartItem {
-                listing: Product::random(),
-                number: 2,
-            },
-            CartItem {
-                listing: Product::random(),
-                number: 1,
-            },
-        ],
+        items: HashMap::from([
+            (
+                Uuid::new_v4(),
+                CartItem {
+                    listing: Product::random(),
+                    number: 3,
+                },
+            ),
+            (
+                Uuid::new_v4(),
+                CartItem {
+                    listing: Product::random(),
+                    number: 2,
+                },
+            ),
+            (
+                Uuid::new_v4(),
+                CartItem {
+                    listing: Product::random(),
+                    number: 1,
+                },
+            ),
+        ]),
     };
 
     html! {
         h2.is-size-4 { "Order Summary" }
             .box {
-                @for item in &cart.items {
+                @for item in cart.items.values() {
                     (review_item(&item.listing).await)
                 }
                 hr;

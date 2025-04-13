@@ -1,6 +1,6 @@
+use bigdecimal::BigDecimal;
 use rand::distributions::Uniform;
 use rand::prelude::*;
-use bigdecimal::BigDecimal;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
@@ -40,6 +40,7 @@ impl Inventory {
 }
 
 #[derive(Deserialize, Serialize, Clone, TS)]
+#[ts(export)]
 pub struct Product {
     pub listing_id: Uuid,
     pub name: String,

@@ -1,11 +1,12 @@
 use axum::{extract::State, Json};
 use serde::Serialize;
-use ts_rs::TS;
 use store_lib::store::Product;
+use ts_rs::TS;
 
 use crate::AppState;
 
 #[derive(Serialize, TS)]
+#[ts(export)]
 pub(crate) struct ListingResponse {
     listings: Vec<Product>,
 }

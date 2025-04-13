@@ -7,27 +7,29 @@ use account::{check_in, login, logout};
 use axum::{
     http::StatusCode,
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post},
     Json, Router,
 };
-use cart::{add_to_cart, fetch_cart};
+use cart::{add_to_cart, fetch_cart, remove_from_cart};
 use serde::Serialize;
 use store::listing;
+use ts_rs::TS;
 
-#[derive(Serialize)]
+#[derive(Serialize, TS)]
 enum ErrorCause {
     Internal,
     Unauthorized,
     MissingInventory,
 }
 
-#[derive(Serialize)]
-struct ApiError {
+#[derive(Serialize, TS)]
+#[ts(export)]
+struct StoreError {
     reason: ErrorCause,
     message: String,
 }
 
-impl ApiError {
+impl StoreError {
     fn internal(message: String) -> Self {
         Self {
             reason: ErrorCause::Internal,
@@ -50,7 +52,7 @@ impl ApiError {
     }
 }
 
-impl IntoResponse for ApiError {
+impl IntoResponse for StoreError {
     fn into_response(self) -> axum::response::Response {
         let code = match self.reason {
             ErrorCause::Internal => StatusCode::BAD_REQUEST,
@@ -69,5 +71,12 @@ pub fn api_routes() -> Router<AppState> {
         .route("/check-in", get(check_in))
         .route("/listings", get(listing))
         .route("/cart", get(fetch_cart))
-        .route("/cart", post(add_to_cart))
+        .route("/cart/{listing_id}", post(add_to_cart))
+        .route("/cart/{listing_id}", delete(remove_from_cart))
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn export_typescript() {}
 }

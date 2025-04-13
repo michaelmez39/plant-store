@@ -12,6 +12,7 @@ use ts_rs::TS;
 use uuid::Uuid;
 
 #[derive(Serialize, Clone, Debug, TS)]
+#[ts(export)]
 pub struct User {
     pub id: Uuid,
     pub email: String,
@@ -21,6 +22,7 @@ pub struct User {
 }
 
 #[derive(Debug, TS)]
+#[ts(export)]
 pub enum UserError {
     #[ts(skip)]
     PasswordHashingFailed(argon2::password_hash::Error),
@@ -79,7 +81,8 @@ impl AuthUser for User {
     }
 }
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, TS)]
+#[ts(export)]
 pub struct Credentials {
     pub email: String,
     pub password: String,
@@ -95,6 +98,7 @@ impl From<Signup> for Credentials {
 }
 
 #[derive(Deserialize, Clone, TS)]
+#[ts(export)]
 pub struct Signup {
     pub email: String,
     pub password: String,
